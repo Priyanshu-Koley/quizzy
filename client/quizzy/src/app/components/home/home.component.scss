@@ -1,0 +1,31 @@
+.body-container{
+    min-height: 100vh;
+    background-color: rgb(225, 225, 224);
+    .home-container{
+        padding: 10px 0px 15px 0px;
+        .form-container{
+            .login-form, .divider{
+                width: 271.5px;
+    
+            }
+        }
+    }
+}
+
+:host ::ng-deep .p-divider.p-divider-horizontal:before {
+    border-top: 2px solid #b8b9b9;
+}
+
+:host ::ng-deep .p-divider.p-divider-horizontal{
+    margin-top: 0%;
+}
+
+:host ::ng-deep .p-card-title {
+    color: #00aaff;
+    text-align: center;
+}
+:host ::ng-deep .p-card-subtitle {
+    color: #d19448;
+    text-align: center;
+}
+
