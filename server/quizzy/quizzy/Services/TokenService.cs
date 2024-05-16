@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using quizzy.Data;
 using quizzy.Entities;
 using quizzy.ServiceInterfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,18 +11,22 @@ namespace quizzy.Services
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
-        public TokenService(IConfiguration configuration)
+        private readonly QuizzyDbContext _context;
+        public TokenService(IConfiguration configuration, QuizzyDbContext context)
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]));
+            _context = context;
         }
 
-        public string CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user)
         {
+            var Role = await _context.Roles.FindAsync(user.RoleID);
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Name, user.Name),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("RoleId", user.RoleID.ToString())
+                new Claim(ClaimTypes.Role, Role!.RoleName),
+                new Claim("roleId", user.RoleID.ToString())
             };
 
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);

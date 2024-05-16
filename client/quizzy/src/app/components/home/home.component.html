@@ -42,7 +42,7 @@
         </div>
         }
         @else {
-        <h1>Hello {{accountService.currentUser$.toPromise}}</h1>
+        <h1>Hello {{user.name}}</h1>
         <p-button label="Logout" icon="pi pi-sign-in" iconPos="right" [loading]="loading" (onClick)="logout()" />
         }
         <p-toast />

@@ -44,6 +44,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero // No tolerance for expiration time
         };
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("TeacherOnly", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("StudentOnly", policy => policy.RequireRole("Student"));
+
+    // Admin and Teacher can access
+    options.AddPolicy("AdminTeacher", policy => policy.RequireRole("Admin", "Teacher"));
+    // Admin, Teacher, and Student can access
+    options.AddPolicy("AdminTeacherStudent", policy => policy.RequireRole("Admin", "Teacher", "Student"));
+});
+
 builder.Services.AddDbContext<QuizzyDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));

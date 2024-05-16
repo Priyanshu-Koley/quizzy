@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using quizzy.Data;
@@ -26,6 +27,7 @@ namespace quizzy.Controllers
 
         // GET: api/Roles/5
         [HttpGet("{id}")]
+        [Authorize(Policy = "AdminTeacher")]
         public async Task<ActionResult<Role>> GetRole(Guid id)
         {
             var role = await _context.Roles.FindAsync(id);
@@ -40,6 +42,7 @@ namespace quizzy.Controllers
 
         // POST: api/Roles
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Role>> PostRole(Role role)
         {
             _context.Roles.Add(role);
@@ -50,7 +53,8 @@ namespace quizzy.Controllers
 
         // PUT: api/Roles/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(Guid id, Role role)
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> UpdateRole(Guid id, Role role)
         {
             if (id != role.Id)
             {
@@ -58,7 +62,7 @@ namespace quizzy.Controllers
             }
 
             _context.Entry(role).State = EntityState.Modified;
-
+            //_context.Update(role);
             try
             {
                 await _context.SaveChangesAsync();
@@ -75,11 +79,12 @@ namespace quizzy.Controllers
                 }
             }
 
-            return NoContent();
+            return StatusCode(200, "Role updated successfully");
         }
 
         // DELETE: api/Roles/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteRole(Guid id)
         {
             var role = await _context.Roles.FindAsync(id);
@@ -91,7 +96,7 @@ namespace quizzy.Controllers
             _context.Roles.Remove(role);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return StatusCode(200, "Role deleted successfully");
         }
 
         private bool RoleExists(Guid id)

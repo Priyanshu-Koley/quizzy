@@ -42,7 +42,7 @@ namespace quizzy.Controllers
                 {
                     return new LoginResultDto
                     {
-                        Token = _tokenService.CreateToken(user)
+                        Token = await _tokenService.CreateToken(user)
                     };
                 }
                 else
@@ -104,7 +104,7 @@ namespace quizzy.Controllers
                 // Return a 201 Created status code with the newly created user
                 return StatusCode(201, new RegisterResultDto
                 {
-                    Token = _tokenService.CreateToken(user)
+                    Token = await _tokenService.CreateToken(user)
                 });
             }
             catch (Exception ex)

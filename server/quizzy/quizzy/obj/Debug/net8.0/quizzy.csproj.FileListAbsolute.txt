@@ -111,3 +111,4 @@ D:\2nd Sub Drive\Final year project\quizzy\server\quizzy\quizzy\bin\Debug\net8.0
 D:\2nd Sub Drive\Final year project\quizzy\server\quizzy\quizzy\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\2nd Sub Drive\Final year project\quizzy\server\quizzy\quizzy\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
 D:\2nd Sub Drive\Final year project\quizzy\server\quizzy\quizzy\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\2nd Sub Drive\Final year project\quizzy\server\quizzy\quizzy\obj\Debug\net8.0\quizzy.sourcelink.json

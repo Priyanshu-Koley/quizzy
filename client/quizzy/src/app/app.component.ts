@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AccountService } from './services/account.service';
-import { User } from './models/user.model';
+import { LoginResponse } from './models/loginResponse.model';
 
 @Component({
   selector: 'app-root',
@@ -17,9 +17,12 @@ export class AppComponent {
   }
 
   setCurrentUser() {
+    if (this.accountService.isLoggedIn()) {
+      
+    }
     const userString = localStorage.getItem('user');
     if (!userString) return;
-    const user: User = JSON.parse(userString);
-    this.accountService.setCurrentUser(user);
+    const userToken: LoginResponse = JSON.parse(userString);
+    this.accountService.setCurrentUser(userToken);
   }
 }

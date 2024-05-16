@@ -3,6 +3,9 @@ import { AccountService } from '../../services/account.service';
 import { Login } from '../../models/login.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { LoginResponse } from '../../models/loginResponse.model';
+import { jwtDecode } from 'jwt-decode';
+
 
 @Component({
   selector: 'app-home',
@@ -63,6 +66,8 @@ export class HomeComponent {
   loading: boolean = false;
   loggedIn: boolean = false;
 
+  token!: String | null;
+  user: any;
   loginForm!: FormGroup;
 
   ngOnInit(): void {
@@ -70,6 +75,13 @@ export class HomeComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.pattern("^(?=.*[0-9])(?=.*[A-Z])(?!.*\s).{8,}$")]],
     });
+    const userString = localStorage.getItem("user");
+    if (userString !== null) {
+      this.user = this.getDecodedJwt(userString);
+    }
+    else{
+      this.loggedIn = false;
+    }
   }
 
   load() {
@@ -87,9 +99,13 @@ export class HomeComponent {
     if (this.loginForm.valid) {
       this.accountService.login(this.loginForm.value).subscribe({
         next: response => {
-          console.log(response);
+          // console.log(response);
           const user = response;
           if (user) {
+            this.token = user.token;
+            this.user = this.getDecodedJwt(user.token);
+            console.log(this.user);
+
             localStorage.setItem('user', JSON.stringify(user));
             this.accountService.setCurrentUser(user);
           }
@@ -107,16 +123,26 @@ export class HomeComponent {
     } else {
       this.messageService.add({ severity: 'error', summary: 'Invalid input', detail: 'Please fill valid details' });
       this.loading = false;
-      
+
     }
-    
+
   }
-  
-  logout() {    
+
+  logout() {
     this.loading = true;
+    this.token = null;
     this.accountService.logout();
     this.loading = false;
     this.loggedIn = false;
+  }
+
+
+  getDecodedJwt(token: string): any {
+    try {
+      return jwtDecode(token);
+    } catch (Error) {
+      return Error;
+    }
   }
 
 }
