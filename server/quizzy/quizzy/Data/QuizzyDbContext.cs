@@ -13,5 +13,17 @@ namespace quizzy.Data
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Option> Options { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Quiz>()
+                .Property(q => q.CreationTime)
+                .HasDefaultValueSql("NOW()");
+            modelBuilder.Entity<Quiz>()
+                .Property(q => q.Active)
+                .HasDefaultValue(true);
+        }
     }
 }

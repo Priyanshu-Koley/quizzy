@@ -1,0 +1,214 @@
+.body{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 50px 100px 50px 100px;
+}
+.create{
+    width: 400px;
+    height: 250px;
+    position: relative;
+    background-color:rgb(214, 233, 248);
+    cursor: pointer;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 20px 20px 10px 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    
+}
+.my-quizzesH{
+    width: 400px;
+    height: 250px;
+    position: relative;
+    background-color:#a1bbae;
+    cursor: pointer;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 20px 20px 10px 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.play{
+    width: 400px;
+    height: 250px;
+    position: relative;
+    background-color:#ff999a;
+    cursor: pointer;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 20px 20px 10px 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    filter: opacity(70%);
+}
+
+.create:hover .b-image-create{
+    transform: translateX(20px)  scale(1.15);
+}
+.my-quizzesH:hover .b-image-quiz{
+    transform: translateX(20px) scale(1.15);
+}
+.play:hover .b-image-play{
+    transform: translateX(20px) translateY(20px) scale(1.15);
+}
+.b-image-create{
+
+    width: 300px;
+    height: 210px;
+    margin-top: 12%;
+    margin-left: 5px;
+    z-index: 0;
+    filter: opacity(40%);
+    transition: all 1s;
+    
+}
+.b-image-quiz{
+    
+    width: 330px;
+    height: 210px;
+    margin-top: 12%;
+    z-index: 0;
+    filter: opacity(50%);
+    transition: all 1s;
+    
+    
+}
+.b-image-play{
+
+    width: 290px;
+    /* height: 210px; */
+    /* margin-top: 12%; */
+    margin-left: 5px;
+    z-index: 0;
+    /* filter: opacity(40%); */
+    transition: all 1s;
+    
+}
+
+.b-image-container{
+    position:absolute;
+}
+
+.c-text{
+    font-weight: 700;
+    font-size: 25px;    
+    z-index: 2;
+    color: rgb(0, 0, 0);
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    filter: opacity(100%);
+}
+
+.modalH{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 490px;
+    background-color:rgb(255, 255, 255);
+    border-radius: 5px;
+    padding: 20px;
+    border: 0;
+    outline: 0;
+}
+
+.types{
+    background-color: rgb(255, 255, 255);
+    padding: 8px;
+    margin: 10px;
+    border-radius: 5px;
+    border: solid 1px grey;
+    cursor: pointer;
+    font-size: 11px;
+}
+.types:hover,.types:focus{
+    background-color:#0066ff;
+    color: white;
+}
+.types:last-child{
+    margin-right: 40px;
+}
+#modalH-title{
+    margin-left: 10px;
+    margin-right: 0;
+    
+    display: flex;
+    justify-content: space-between;
+}
+#modalH-title button{
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    margin: 0 0 auto auto;
+    background-color: transparent;
+}
+#modalH-title span{
+    padding-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 700;
+}
+.modalH span{
+    font-size: 15px;
+    font-weight: 600;
+}
+.modalH:focus-visible{
+    border: 0;
+    outline: 0;
+}
+
+
+
+
+@media only screen and (max-width: 770px) {
+    .create,.my-quizzesH,.play{
+        width: 300px;
+        height: 187px;
+    }
+    .b-image-create{
+        width: 200px;
+        height: 150px;
+    }
+    .b-image-quiz{
+        width: 230px;
+        height: 150px;
+        
+    }
+    .b-image-play{
+        width: 210px;
+
+    }
+    .c-text{
+        font-size: 20px;
+    }
+    .modalH{
+        width: 80%;
+    }
+}
+
+@media only screen and (max-width: 375px) {
+    .create,.my-quizzesH,.play{
+        width: 250px;
+        height: 170px;
+    }
+    .b-image-create{
+        width: 200px;
+        height: 150px;
+    }
+    .b-image-quiz{
+        width: 230px;
+        height: 150px;
+        
+    }
+    .b-image-play{
+        width: 210px;
+
+    }
+    .c-text{
+        font-size: 17px;
+    }
+    .body{
+        padding-top: 15px;
+    }
+}

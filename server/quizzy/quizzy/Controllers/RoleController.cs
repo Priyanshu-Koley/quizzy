@@ -42,7 +42,7 @@ namespace quizzy.Controllers
 
         // POST: api/Roles
         [HttpPost]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<Role>> PostRole(Role role)
         {
             _context.Roles.Add(role);
@@ -79,7 +79,10 @@ namespace quizzy.Controllers
                 }
             }
 
-            return StatusCode(200, "Role updated successfully");
+            return StatusCode(200, new
+            {
+                message = "Role updated successfully"
+            });
         }
 
         // DELETE: api/Roles/5
@@ -96,7 +99,10 @@ namespace quizzy.Controllers
             _context.Roles.Remove(role);
             await _context.SaveChangesAsync();
 
-            return StatusCode(200, "Role deleted successfully");
+            return StatusCode(200, new
+            {
+                message = "Role deleted successfully"
+            });
         }
 
         private bool RoleExists(Guid id)

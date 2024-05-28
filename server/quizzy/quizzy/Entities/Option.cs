@@ -7,8 +7,9 @@ namespace quizzy.Entities
     {
         [Key]
         public Guid OptionId { get; set; }
-        public required string Text { get; set; }
-        public bool IsCorrect { get; set; }
+        public required string Title { get; set; }
+        public required bool IsCorrect { get; set; }
+        public required int OptionNo { get; set; }
 
         // Foreign Key
         public Guid QuestionId { get; set; }

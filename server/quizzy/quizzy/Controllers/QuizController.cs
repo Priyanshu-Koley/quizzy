@@ -7,6 +7,7 @@ using quizzy.Entities;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace quizzy.Controllers
 {
@@ -15,41 +16,50 @@ namespace quizzy.Controllers
     public class QuizController : ControllerBase
     {
         private readonly QuizzyDbContext _context;
+        private readonly IMapper _mapper;
 
-        public QuizController(QuizzyDbContext context)
+        public QuizController(QuizzyDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Quiz
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetQuizDto>>> GetQuizzes()
         {
             var quizzes = await _context.Quizzes
                 .Include(q => q.Questions)
                 .ThenInclude(q => q.Options)
+                .OrderBy(q => q.CreationTime) // Order by creation time
                 .ToListAsync();
 
-            var quizDtos = quizzes.Select(quiz => new GetQuizDto
-            {
-                QuizId = quiz.QuizId,
-                Title = quiz.Title,
-                Description = quiz.Description,
-                Questions = quiz.Questions.Select(q => new GetQuestionDto
-                {
-                    QuestionId = q.QuestionId,
-                    Title = q.Title,
-                    Options = q.Options.Select(o => new GetOptionDto
-                    {
-                        OptionId = o.OptionId,
-                        Text = o.Text,
-                        IsCorrect = o.IsCorrect
-                    }).ToList()
-                }).ToList()
-            }).ToList();
+            //var quizDtos = quizzes.Select(quiz => new GetQuizDto
+            //{
+            //    QuizId = quiz.QuizId,
+            //    Title = quiz.Title,
+            //    Description = quiz.Description,
+            //    CreationTime = quiz.CreationTime,
+            //    CreatedBy = quiz.CreatedBy,
+            //    Questions = quiz.Questions.Select(q => new GetQuestionDto
+            //    {
+            //        QuestionId = q.QuestionId,
+            //        Title = q.Title,
+            //        QuestionNo = q.QuestionNo,
+            //        Options = q.Options.Select(o => new GetOptionDto
+            //        {
+            //            OptionId = o.OptionId,
+            //            OptionNo = o.OptionNo,
+            //            Text = o.Text,
+            //            IsCorrect = o.IsCorrect
+            //        }).ToList()
+            //    }).ToList()
+            //}).ToList();
 
-            return quizDtos;
+            var quizzesDto = _mapper.Map<List<GetQuizDto>>(quizzes);
+
+            return Ok(quizzesDto);
         }
 
 
@@ -67,23 +77,7 @@ namespace quizzy.Controllers
                 return NotFound();
             }
 
-            var quizDto = new GetQuizDto
-            {
-                QuizId = quiz.QuizId,
-                Title = quiz.Title,
-                Description = quiz.Description,
-                Questions = quiz.Questions.Select(q => new GetQuestionDto
-                {
-                    QuestionId = q.QuestionId,
-                    Title = q.Title,
-                    Options = q.Options.Select(o => new GetOptionDto
-                    {
-                        OptionId = o.OptionId,
-                        Text = o.Text,
-                        IsCorrect = o.IsCorrect
-                    }).ToList()
-                }).ToList()
-            };
+            var quizDto = _mapper.Map<GetQuizDto>(quiz);
 
             return quizDto;
         }
@@ -93,37 +87,36 @@ namespace quizzy.Controllers
         public async Task<ActionResult<Quiz>> CreateQuizWithQuestionsAndOptions(CreateQuizDto quizDto)
         {
             // Create quiz
-            var quiz = new Quiz { Title = quizDto.Title, Description = quizDto.Description };
-            _context.Quizzes.Add(quiz);
+            //var quiz = new Quiz { Title = quizDto.Title, Description = quizDto.Description, CreationTime = DateTime.UtcNow, CreatedBy = quizDto.CreatedBy };
+            //_context.Quizzes.Add(quiz);
+            //await _context.SaveChangesAsync();
+
+            //// Create questions
+            //foreach (var questionDto in quizDto.Questions)
+            //{
+            //    var question = new Question { Title = questionDto.Title, QuizId = quiz.QuizId, QuestionNo = questionDto.QuestionNo };
+            //    _context.Questions.Add(question);
+
+            //    // Create options for each question
+            //    foreach (var optionDto in questionDto.Options)
+            //    {
+            //        var option = new Option { Title = optionDto.Title, IsCorrect = optionDto.IsCorrect, Question = question, OptionNo = optionDto.OptionNo };
+            //        _context.Options.Add(option);
+            //    }
+            //}
+
+            var newQuiz = _mapper.Map<Quiz>(quizDto);
+            _context.Add(newQuiz);
+
             await _context.SaveChangesAsync();
 
-            // Create questions
-            foreach (var questionDto in quizDto.Questions)
-            {
-                var question = new Question { Title = questionDto.Title, QuizId = quiz.QuizId };
-                _context.Questions.Add(question);
-
-                // Create options for each question
-                foreach (var optionDto in questionDto.Options)
-                {
-                    var option = new Option { Text = optionDto.Title, IsCorrect = optionDto.IsCorrect, Question = question };
-                    _context.Options.Add(option);
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            return StatusCode(201, "Quiz creted successfully");
+            return StatusCode(201, new { message = "Quiz creted successfully" });
         }
 
         // PUT: api/Quiz/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuiz(Guid id, UpdateQuizDto updatedQuizDto)
+        public async Task<ActionResult> UpdateQuiz(Guid id, UpdateQuizDto updatedQuizDto)
         {
-            //if (id != updatedQuizDto.QuizId)
-            //{
-            //    return BadRequest("Mismatch between provided ID and quiz ID in the payload.");
-            //}
 
             var existingQuiz = await _context.Quizzes
                 .Include(q => q.Questions)
@@ -132,49 +125,78 @@ namespace quizzy.Controllers
 
             if (existingQuiz == null)
             {
-                return NotFound("Quiz not found.");
+                return NotFound(new { message = "Quiz not found." });
             }
 
             // Delete the existing quiz
             _context.Quizzes.Remove(existingQuiz);
 
             // Create a new quiz
-            var newQuiz = new Quiz
-            {
-                QuizId = id,
-                Title = updatedQuizDto.Title,
-                Description = updatedQuizDto.Description,
-                Questions = updatedQuizDto.Questions.Select(q => new Question
-                {
-                    QuestionId = q.QuestionId,
-                    Title = q.Title,
-                    Options = q.Options.Select(o => new Option
-                    {
-                        OptionId = o.OptionId,
-                        Text = o.Text,
-                        IsCorrect = o.IsCorrect
-                    }).ToList()
-                }).ToList()
-            };
+            //var newQuiz = new Quiz
+            //{
+            //    QuizId = id,
+            //    Title = updatedQuizDto.Title,
+            //    Description = updatedQuizDto.Description,
+            //    CreationTime = updatedQuizDto.CreationTime,
+            //    Questions = updatedQuizDto.Questions.Select(q => new Question
+            //    {
+            //        QuestionId = q.QuestionId,
+            //        Title = q.Title,
+            //        Options = q.Options.Select(o => new Option
+            //        {
+            //            OptionId = o.OptionId,
+            //            Title = o.Title,
+            //            IsCorrect = o.IsCorrect
+            //        }).ToList()
+            //    }).ToList()
+            //};
+
+            var updateQuiz = _mapper.Map<Quiz>(updatedQuizDto);
 
             // Add the new quiz to the context
-            _context.Quizzes.Add(newQuiz);
+            _context.Quizzes.Add(updateQuiz);
 
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok("Quiz updated successfully");
+                return Ok(new { message = "Quiz updated successfully" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while updating the quiz: {ex.Message}");
+                return StatusCode(500, new { message = $"An error occurred while updating the quiz: {ex.Message}" });
             }
 
         }
 
+        [HttpPut("active/{id}")]
+        public async Task<ActionResult> UpdateQuizStatus(Guid id, bool status)
+        {
+
+            var existingQuiz = await _context.Quizzes
+                .Include(q => q.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefaultAsync(q => q.QuizId == id);
+
+            if (existingQuiz == null)
+            {
+                return NotFound(new { message = "Quiz not found." });
+            }
+
+            existingQuiz.Active = status;
+            _context.Quizzes.Update(existingQuiz);
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Quiz status updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"An error occurred while updating the quiz: {ex.Message}" });
+            }
+        }
         // DELETE: api/Quiz/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteQuiz(Guid id)
+        public async Task<ActionResult> DeleteQuiz(Guid id)
         {
             var quiz = await _context.Quizzes.FindAsync(id);
             if (quiz == null)
@@ -185,8 +207,17 @@ namespace quizzy.Controllers
             _context.Quizzes.Remove(quiz);
             await _context.SaveChangesAsync();
 
-            return Ok("Quiz deleted successfully");
+            return Ok(new
+            {
+                message = "Quiz deleted successfully"
+            });
         }
+
+        //[HttpPost("startQuiz")]
+        //public async Task<ActionResult> StartQuiz()
+        //{
+
+        //}
 
         private bool QuizExists(Guid id)
         {

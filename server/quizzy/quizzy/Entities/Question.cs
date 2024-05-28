@@ -9,6 +9,8 @@ namespace quizzy.Entities
         [Key]
         public Guid QuestionId { get; set; }
         public required string Title { get; set; }
+        public required int QuestionNo { get; set; }
+        public required int Marks { get; set; }
         public virtual ICollection<Option> Options { get; set; }
 
         // Foreign Key

@@ -31,7 +31,7 @@ namespace quizzy.Controllers
 
                 if (user == null)
                 {
-                    return Unauthorized("Email does not exists");
+                    return Unauthorized(new { message = "Email does not exist" });
                 }
 
                 // Combine the provided password with the stored salt and hash it
@@ -42,18 +42,18 @@ namespace quizzy.Controllers
                 {
                     return new LoginResultDto
                     {
-                        Token = await _tokenService.CreateToken(user)
+                        Token = await _tokenService.CreateToken(user, 30)
                     };
                 }
                 else
                 {
-                    return Unauthorized("Incorrect password");
+                    return Unauthorized(new { message = "Incorrect password" });
                 }
             }
             catch (Exception ex)
             {
                 // Return a 500 Internal Server Error status code with an error message
-                return StatusCode(500, "An error occurred while logging in. Please try again later.");
+                return StatusCode(500, new { message = "An error occurred while logging in. Please try again later." });
             }
         }
 
@@ -66,19 +66,19 @@ namespace quizzy.Controllers
                 // Check if the provided email already exists
                 if (_context.Users.Any(u => u.Email == registerDto.Email))
                 {
-                    return Conflict("Email address already exists");
+                    return Conflict(new { message = "Email address already exists" });
                 }
 
                 // Validate the email address
                 if (!EmailValidator.IsValidEmail(registerDto.Email))
                 {
-                    return BadRequest("Invalid email address");
+                    return BadRequest(new { message = "Invalid email address" });
                 }
 
                 // Validate the password
                 if (!PasswordValidator.IsValidPassword(registerDto.Password))
                 {
-                    return BadRequest("Invalid password");
+                    return BadRequest(new { message = "Invalid password" });
                 }
 
                 // Generate salt
@@ -104,13 +104,16 @@ namespace quizzy.Controllers
                 // Return a 201 Created status code with the newly created user
                 return StatusCode(201, new RegisterResultDto
                 {
-                    Token = await _tokenService.CreateToken(user)
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    RoleID = user.RoleID
                 });
             }
             catch (Exception ex)
             {
                 // Return a 500 Internal Server Error status code with an error message
-                return StatusCode(500, "An error occurred while registering the user. Please try again later.");
+                return StatusCode(500, new { message = "An error occurred while registering the user. Please try again later." });
             }
         }
     }

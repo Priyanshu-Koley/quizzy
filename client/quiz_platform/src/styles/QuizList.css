@@ -1,0 +1,196 @@
+
+@import url(https://db.onlinewebfonts.com/c/b21ba61d9223eb35c673041adcb43100?family=BrandonGrotesque-Bold);
+
+.fade {
+    opacity: 50%;
+    margin: auto 5px auto 5px;
+    border: 0;
+}
+.quiz-top-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.empty-quizzes{
+    font-family: "BrandonGrotesque-Bold", serif;
+    align-self: center;
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.quiz-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.quiz-head{
+    font-size: 50px;
+    font-weight: 900;
+    margin: 20px 0 20px 0;
+}
+.create-quiz-link{
+    background-color:#1976d2 ;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.inactive td{
+    /* color: #a5a5a5; */
+    opacity: 50%;
+
+}
+.table-container{
+    display: flex;
+    justify-content: center;
+    padding: 10px 50px 10px 50px;
+    
+}
+.table-container-modal{
+    display: flex;
+    justify-content: center;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.table-container table td{
+    font-size: 20px;
+    font-family: "BrandonGrotesque-Bold";
+}
+.table-container table th{
+    font-size: 25px;
+    font-family: "BrandonGrotesque-Bold";
+}
+.status{
+    width: 65px;
+    font-weight: 500;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.status-container{
+    min-height: 96px;
+}
+.actions{
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    margin: 0 5px 0 5px;
+    padding: 0;
+    transition: visibility 1s ease-out;
+}
+.actions:hover{
+    border: none;
+    background-color: rgb(242, 240, 240);
+    border-radius: 50%;
+}
+.actions:active{
+    background-color: rgb(228, 227, 227);
+}
+#editBtn{
+    margin: 0;
+    padding: 0;
+}
+
+.modal-dlt{
+    font-weight: 500;
+    width: 500px;
+    /* height: 200px; */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    /* align-items: center; */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color:rgb(255, 255, 255);
+    border-radius: 5px;
+    border: 0;
+    outline: 0;
+}
+.close-btn{
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    margin: 0 0 auto auto;
+}
+.modal-head-dlt{
+    font-size: 30px;
+
+}
+#modal-description-dlt{
+    padding-top: 35px;
+}
+
+@media only screen and (max-width: 426px) {
+
+    .empty-quizzes{
+        width: 85%;
+        font-size: larger;
+    }
+    .create-quiz-link{
+        padding: 12px;
+        font-size: medium;
+    }
+    .quiz-head{
+        font-size: 30px;
+    }
+    .table-container{
+        padding: 20px;
+    }
+    .table-container table td{
+        font-size: 15px;
+    }
+    .table-container table th{
+        font-size: 20px;
+    }
+    .modal-dlt{
+        width: 98vw;
+        font-size: small;
+    }
+    .modal-head-dlt{
+        font-size: large;
+    }
+    .modal-dlt button{
+        font-size: small;
+    }
+}
+
+@media only screen and (max-width: 377px) {
+
+    .create-quiz-link{
+        padding: 10px;
+        font-size: medium;
+    }
+    .quiz-top{
+        width: 90%;
+    }
+
+}
+@media only screen and (max-width: 325px) {
+
+    .empty-quizzes{
+        width: 85%;
+        font-size: large;
+    }
+    .quiz-head{
+        font-size: 23px;
+    }
+    .table-container{
+        padding: 10px;
+    }
+    .create-quiz-link{
+        padding: 10px;
+        font-size: small;
+    }
+}

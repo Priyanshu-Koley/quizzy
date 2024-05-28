@@ -1,0 +1,151 @@
+.logo{
+    width: 150px;
+}
+.nav{
+    background-color: aliceblue;
+    padding: 5px 30px 5px 30px;
+    border-bottom: 2px solid rgb(93, 145, 243);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 25px;
+    width: 100%;
+    box-shadow:  1px 1px 10px rgba(0, 0, 0, 0.682);
+}
+.menu{
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    width: 500px;
+}
+.home{
+    color: black;
+}
+.home-link{
+    text-decoration: none;
+}
+.quizzes-link{
+    text-decoration: none;
+}
+.play-link{
+    background-color: transparent;
+    text-decoration: none;
+    cursor: pointer;
+}
+.quizzes{
+    color: black;
+}
+.active{
+    color: cornflowerblue;
+    font-weight: 700;
+}
+
+/* Playable quiz modal */
+.modalPlay{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background-color:rgb(255, 255, 255);
+    border-radius: 5px;
+    padding: 10px;
+    border: 0;
+    outline: 0;
+    overflow-y: auto;
+}
+#modalPlay-title{
+    margin-left: 10px;
+    margin-right: 0;
+    
+    display: flex;
+    justify-content: space-between;
+}
+#modalPlay-title button{
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    margin: 0 0 auto auto;
+    background-color: transparent;
+}
+#modalPlay-title span{
+    padding-top: 10px;
+    margin-bottom: 20px;
+    font-size: 40px;
+    font-weight: 900;
+}
+
+.table-container-modal table td{
+    font-size: 20px;
+    font-family: "BrandonGrotesque-Bold";
+}
+.table-container-modal table th{
+    font-size: 25px;
+    font-family: "BrandonGrotesque-Bold";
+}
+
+@media only screen and (max-width: 768px) {
+    .nav{
+        font-size:20px;
+    }
+    .logo{
+        width:90px;
+    }
+    .menu{
+        width: 400px;
+    }
+
+    
+    .modalPlay{
+        width: 95%;
+    }
+    #modalPlay-title span{
+        font-size:x-large;
+    }
+
+    .table-container-modal table td{
+        font-size: 15px;
+        font-family: "BrandonGrotesque-Bold";
+    }
+    .table-container-modal table th{
+        font-size: 18px;
+        font-family: "BrandonGrotesque-Bold";
+    }
+}
+@media only screen and (max-width: 426px) {
+    .nav{
+        font-size:15px;
+        padding: 5px 25px 5px 25px;
+    }
+    .logo{
+        width:80px;
+    }
+    .menu{
+        width: 240px;
+    }
+}
+@media only screen and (max-width: 376px) {
+    .nav{
+        font-size: 13px;
+        padding: 5px 20px 5px 20px;
+    }
+    .logo{
+        width:70px;
+    }
+    .menu{
+        width: 200px;
+    }
+}
+@media only screen and (max-width: 320px) {
+    .nav{
+        font-size: 11px;
+        padding: 5px 20px 5px 20px;
+    }
+    .logo{
+        width:60px;
+    }
+    .menu{
+        width: 150px;
+    }
+}

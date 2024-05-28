@@ -9,6 +9,7 @@ using quizzy.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using quizzy.Automapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,8 @@ builder.Services.AddControllers();
 //        options.JsonSerializerOptions.MaxDepth = int.MaxValue; // Set your desired depth here
 //    });
 
+// Register AutoMapper and add profiles
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //.AddJsonOptions(options =>
 //{
@@ -50,6 +53,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("TeacherOnly", policy => policy.RequireRole("Teacher"));
     options.AddPolicy("StudentOnly", policy => policy.RequireRole("Student"));
+    options.AddPolicy("CanSubmit", policy => policy.RequireClaim("ResultId"));
 
     // Admin and Teacher can access
     options.AddPolicy("AdminTeacher", policy => policy.RequireRole("Admin", "Teacher"));
@@ -81,7 +85,7 @@ app.UseHttpsRedirection();
 app.UseCors(policy => policy
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .WithOrigins("http://localhost:4200")
+                        .WithOrigins("http://localhost:4200", "http://localhost:3000")
                          );
 
 app.UseAuthentication();
