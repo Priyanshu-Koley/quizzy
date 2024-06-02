@@ -39,16 +39,33 @@ const Nav = ({ active, user }) => {
                 <Link to='/' className='home-link'>
                     <div className={active === 1 ? "home active" : "home"}>Home</div>
                 </Link>
-                {/* My quizzes button */}
-                <Link to='/quizzes' className='quizzes-link'>
-                    <div className={active === 2 ? "quizzes active" : "quizzes"}>My Quizzes</div>
-                </Link>
+
+                {/* All quizzes button */}
+                {user.role === "Admin" || user.role === "Teacher" ?
+                    // eslint-disable-next-line
+                    <Link to='/quizzes' className='quizzes-link'>
+                        <div className={active === 2 ? "quizzes active" : "quizzes"}>All Quizzes</div>
+                    </Link>
+                    :
+                    <></>
+                }
+
                 {/* Playable quizzes list modal open button */}
                 <div className='play-link' onClick={handleOpenPlay}>
                     <div>Play Quizzes</div>
                 </div>
-                {/* Profile button */}
 
+                {/* My quizzes button */}
+                {user.role === "Student"  ?
+                    // eslint-disable-next-line
+                    <Link to='/my-quizzes' className='quizzes-link'>
+                        <div className={active === 3 ? "quizzes active" : "quizzes"}>My Quizzes</div>
+                    </Link>
+                    :
+                    <></>
+                }
+
+                {/* Profile button */}
                 {/* Menu */}
                 <Dropdown>
                     <Tooltip title="Account settings">
@@ -61,7 +78,7 @@ const Nav = ({ active, user }) => {
                     </Tooltip>
                     <Menu>
                         <MenuItem>
-                            <Avatar sx={{ bgcolor: deepOrange[500], mr: 2 }}>{user.firstLetter}</Avatar> <span>{user.name}  <br/> {user.role} </span></MenuItem>
+                            <Avatar sx={{ bgcolor: deepOrange[500], mr: 2 }}>{user.firstLetter}</Avatar> <span>{user.name}  <br /> {user.role} </span></MenuItem>
                         <MenuItem>
                             <ListItemIcon>
                                 <Settings fontSize="small" />
@@ -69,7 +86,7 @@ const Nav = ({ active, user }) => {
                             My account
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={()=>setOpenLogout(true)}>
+                        <MenuItem onClick={() => setOpenLogout(true)}>
                             <ListItemIcon>
                                 <Logout fontSize="small" />
                             </ListItemIcon>
@@ -83,7 +100,7 @@ const Nav = ({ active, user }) => {
             <PlayList open={openPlay} handleClose={handleClosePlay} />
             {/* logout confirmation modal */}
             <Modal open={openLogout} onClose={() => setOpenLogout(false)} >
-                <ModalDialog variant="soft" role="alertdialog" size="lg" sx={{fontSize:25}}>
+                <ModalDialog variant="soft" role="alertdialog" size="lg" sx={{ fontSize: 25 }}>
                     <DialogTitle>
                         <WarningRoundedIcon />
                         Logout Confirmation
@@ -93,7 +110,7 @@ const Nav = ({ active, user }) => {
                         Are you sure you want to logout?
                     </DialogContent>
                     <DialogActions>
-                        <Button variant="solid" color="danger"  onClick={() => logout()}>
+                        <Button variant="solid" color="danger" onClick={() => logout()}>
                             Logout
                         </Button>
                         <Button variant="plain" color="neutral" onClick={() => setOpenLogout(false)}>

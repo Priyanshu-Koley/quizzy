@@ -58,7 +58,7 @@ namespace quizzy.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<RegisterResultDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult> Register(RegisterDto registerDto)
         {
             try
             {
@@ -102,13 +102,16 @@ namespace quizzy.Controllers
                 await _context.SaveChangesAsync();
 
                 // Return a 201 Created status code with the newly created user
-                return StatusCode(201, new RegisterResultDto
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email,
-                    RoleID = user.RoleID
-                });
+                //return StatusCode(201, new RegisterResultDto
+                //{
+                //    UserId = user.UserId,
+                //    Name = user.Name,
+                //    Email = user.Email,
+                //    RoleID = user.RoleID
+                //});
+                //
+                return StatusCode(201, new { message = "Registration Successfull" });
+
             }
             catch (Exception ex)
             {

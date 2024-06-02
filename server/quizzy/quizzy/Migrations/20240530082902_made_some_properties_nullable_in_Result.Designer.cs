@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using quizzy.Data;
@@ -11,9 +12,11 @@ using quizzy.Data;
 namespace quizzy.Migrations
 {
     [DbContext(typeof(QuizzyDbContext))]
-    partial class QuizzyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240530082902_made_some_properties_nullable_in_Result")]
+    partial class made_some_properties_nullable_in_Result
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,13 +203,13 @@ namespace quizzy.Migrations
                     b.Property<int?>("NoOfWrongAnswers")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ObtainedMarks")
+                    b.Property<int?>("OtainedMarks")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("StartTime")
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<double?>("TimeTakenInSecs")

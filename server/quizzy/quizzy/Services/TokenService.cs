@@ -18,24 +18,29 @@ namespace quizzy.Services
             _context = context;
         }
 
-        public async Task<string> CreateToken(AppUser user, int lifeTimeInMins)
+        public async Task<string> CreateToken(AppUser user, int lifeTimeInDays, Guid? resultId = null)
         {
             var Role = await _context.Roles.FindAsync(user.RoleID);
             var claims = new List<Claim>
             {
-                new Claim("userId", user.Id.ToString()),
+                new Claim("userId", user.UserId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Name, user.Name),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, Role!.RoleName),
                 new Claim("roleId", user.RoleID.ToString())
             };
 
+            if (resultId != null)
+            {
+                claims.Add(new Claim("ResultId", resultId.ToString()));
+            }
+
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(lifeTimeInMins),
+                Expires = DateTime.Now.AddDays(lifeTimeInDays),
                 SigningCredentials = credentials
             };
 

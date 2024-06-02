@@ -9,6 +9,7 @@ import QuizList from './components/QuizList';
 import PlayQuiz from './components/PlayQuiz';
 import NotFound from './components/NotFound';
 import { jwtDecode } from 'jwt-decode';
+import MyQuizzes from './components/MyQuizzes';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -57,6 +58,7 @@ function App() {
           <Route path="/mcq-single" element={<PrivateRoute token={token} element={<CreateMcqSingle user={user} />} />} />
           <Route path="/quizzes" element={<PrivateRoute token={token} element={<QuizList user={user} />} />} />
           <Route path="/play" element={<PrivateRoute token={token} element={<PlayQuiz user={user} />} />} />
+          <Route path="/my-quizzes" element={<PrivateRoute token={token} element={<MyQuizzes user={user} />} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
     </div>

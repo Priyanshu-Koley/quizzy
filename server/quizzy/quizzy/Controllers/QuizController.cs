@@ -32,7 +32,7 @@ namespace quizzy.Controllers
             var quizzes = await _context.Quizzes
                 .Include(q => q.Questions)
                 .ThenInclude(q => q.Options)
-                .OrderBy(q => q.CreationTime) // Order by creation time
+                .OrderByDescending(q => q.CreationTime) // Order by creation time
                 .ToListAsync();
 
             //var quizDtos = quizzes.Select(quiz => new GetQuizDto
@@ -213,11 +213,6 @@ namespace quizzy.Controllers
             });
         }
 
-        //[HttpPost("startQuiz")]
-        //public async Task<ActionResult> StartQuiz()
-        //{
-
-        //}
 
         private bool QuizExists(Guid id)
         {

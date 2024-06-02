@@ -50,6 +50,7 @@
 .play-desc{
     font-size: 18px;
     margin-bottom: 10px;
+    overflow-x: auto;
 }
 .play-quiz-info{
     width: 100%;
@@ -127,6 +128,7 @@
     margin-bottom: 10px;
 }
 .play-option{
+    overflow-x: auto;
     font-size: 20px;
     margin-left: 10px;
 }
@@ -163,6 +165,7 @@
 
 
 /* Radio styling */
+
 
 label.radio-card {
 	cursor: pointer;

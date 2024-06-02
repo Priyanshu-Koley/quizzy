@@ -309,11 +309,12 @@ function CreateMcqSingle(propsData) {
         };
     };
 
+    // create the quiz in db by api call
     const createQuiz = (quiz) => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
-
+        
         const raw = JSON.stringify(quiz);
 
         const requestOptions = {
@@ -325,12 +326,12 @@ function CreateMcqSingle(propsData) {
 
         fetch("https://localhost:7085/api/Quiz", requestOptions)
             .then(async (response) => {
-                console.log(response);
                 const result = await response.json();
                 if (response.status === 400) {
                     toast.error("Bad request");
                 }
                 if (response.status === 201) {
+                    sendQuizAddedEmail(quiz.title);
                     toast.success(result.message);
                     handleOpen();
                 }
@@ -344,6 +345,7 @@ function CreateMcqSingle(propsData) {
             });
     }
 
+    // update the quiz in db by api call
     const updateQuiz = (quiz) => {
 
         const myHeaders = new Headers();
@@ -361,7 +363,6 @@ function CreateMcqSingle(propsData) {
 
         fetch(`https://localhost:7085/api/Quiz/${quiz.quizId}`, requestOptions)
             .then(async (response) => {
-                console.log(response);
                 const result = await response.json();
                 if (response.status === 400) {
                     toast.error("Bad request");
@@ -379,7 +380,9 @@ function CreateMcqSingle(propsData) {
                 handleOpenSad();
             });
     }
-    // function to save the quiz in the database
+
+
+    // function for all the quiz validations
     const onSave = e => {
 
         e.preventDefault();
@@ -446,6 +449,43 @@ function CreateMcqSingle(propsData) {
         }
 
 
+    }
+
+    const sendQuizAddedEmail = (quizName) =>{
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+        
+        const raw = JSON.stringify({
+            "quizName": quizName,
+            "createdBy": user.name
+        });
+
+        console.log(raw);
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+        };
+
+        fetch("https://localhost:7085/api/Email/QuizAdded", requestOptions)
+            .then(async (response) => {
+                const result = await response.json();
+                if (response.status === 400) {
+                    toast.error("Bad request");
+                }
+                if (response.status === 200) {
+                    toast.success("Notification sent to all students");
+                }
+                else
+                    toast.error(result.message);
+            })
+            .catch((error) => {
+                console.log(error);
+                toast.error(error);
+            });
     }
 
 

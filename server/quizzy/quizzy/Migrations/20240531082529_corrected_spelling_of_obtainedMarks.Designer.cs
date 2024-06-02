@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using quizzy.Data;
@@ -11,9 +12,11 @@ using quizzy.Data;
 namespace quizzy.Migrations
 {
     [DbContext(typeof(QuizzyDbContext))]
-    partial class QuizzyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531082529_corrected_spelling_of_obtainedMarks")]
+    partial class corrected_spelling_of_obtainedMarks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,7 +209,7 @@ namespace quizzy.Migrations
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("StartTime")
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<double?>("TimeTakenInSecs")

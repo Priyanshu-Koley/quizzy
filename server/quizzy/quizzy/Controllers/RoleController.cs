@@ -56,7 +56,7 @@ namespace quizzy.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdateRole(Guid id, Role role)
         {
-            if (id != role.Id)
+            if (id != role.RoleId)
             {
                 return BadRequest();
             }
@@ -87,7 +87,7 @@ namespace quizzy.Controllers
 
         // DELETE: api/Roles/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteRole(Guid id)
         {
             var role = await _context.Roles.FindAsync(id);
@@ -107,7 +107,7 @@ namespace quizzy.Controllers
 
         private bool RoleExists(Guid id)
         {
-            return _context.Roles.Any(e => e.Id == id);
+            return _context.Roles.Any(e => e.RoleId == id);
         }
     }
 }

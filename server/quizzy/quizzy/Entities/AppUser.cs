@@ -7,7 +7,7 @@ namespace quizzy.Entities
     public class AppUser
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public required string Name { get; set; }
         public required string Email { get; set; }
         public required string PasswordSalt { get; set; }

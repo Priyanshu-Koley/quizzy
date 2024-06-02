@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using quizzy.Data;
@@ -11,9 +12,11 @@ using quizzy.Data;
 namespace quizzy.Migrations
 {
     [DbContext(typeof(QuizzyDbContext))]
-    partial class QuizzyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240530080704_added_Answer_and_updated_Result")]
+    partial class added_Answer_and_updated_Result
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,7 +61,7 @@ namespace quizzy.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Answers");
+                    b.ToTable("Answer");
                 });
 
             modelBuilder.Entity("quizzy.Entities.AppUser", b =>
@@ -188,28 +191,28 @@ namespace quizzy.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("EndTime")
+                    b.Property<DateTime>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("NoOfAttemptedQuestions")
+                    b.Property<int>("NoOfAttemptedQuestions")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("NoOfCorrectAnswers")
+                    b.Property<int>("NoOfCorrectAnswers")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("NoOfWrongAnswers")
+                    b.Property<int>("NoOfWrongAnswers")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ObtainedMarks")
+                    b.Property<int>("OtainedMarks")
                         .HasColumnType("integer");
 
                     b.Property<Guid>("QuizId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("StartTime")
+                    b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double?>("TimeTakenInSecs")
+                    b.Property<double>("TimeTakenInSecs")
                         .HasColumnType("double precision");
 
                     b.Property<int>("TotalMarks")

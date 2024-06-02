@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using quizzy.Data;
@@ -11,9 +12,11 @@ using quizzy.Data;
 namespace quizzy.Migrations
 {
     [DbContext(typeof(QuizzyDbContext))]
-    partial class QuizzyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240601121607_made_startTime_nullable")]
+    partial class made_startTime_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

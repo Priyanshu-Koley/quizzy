@@ -352,7 +352,7 @@ export const QuizList = (props) => {
                       <TableCell align="left" className={isModal ? "hide" : ""} >Status</TableCell>
                       <TableCell align="left" >Created&nbsp;on</TableCell>
                       <TableCell align="left" >Created&nbsp;by</TableCell>
-                      <TableCell align="left" >Actions</TableCell>
+                      <TableCell align="left" >{user.role === "Student" ? "Play" : "Actions"}</TableCell>
                     </TableRow>
                   </TableHead>
 

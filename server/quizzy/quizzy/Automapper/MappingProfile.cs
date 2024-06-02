@@ -23,6 +23,26 @@ namespace quizzy.Automapper
             CreateMap<UpdateQuizDto, Quiz>();
             CreateMap<UpdateQuestionDto, Question>();
             CreateMap<UpdateOptionDto, Option>();
+
+            CreateMap<StartQuizDto, Result>();
+            CreateMap<SubmitQuizDto, Result>();
+
+            CreateMap<SubmitQuizDto, Result>()
+            .ForMember(dest => dest.ResultId, opt => opt.Ignore()) // Ignore ResultId during update
+            .ForMember(dest => dest.UserId, opt => opt.Ignore()) // Ignore UserId during update
+            .ForMember(dest => dest.QuizId, opt => opt.Ignore()) // Ignore QuizId during update
+            .ForMember(dest => dest.TotalMarks, opt => opt.Ignore()); // Ignore TotalMarks during update
+
+            CreateMap<AnswerDto, Answer>()
+            .ForMember(dest => dest.AnswerId, opt => opt.Ignore()) // Ignore AnswerId during update
+            .ForMember(dest => dest.Result, opt => opt.Ignore()) // Ignore navigation property
+            .ForMember(dest => dest.Question, opt => opt.Ignore()) // Ignore navigation property
+            .ForMember(dest => dest.Option, opt => opt.Ignore()) // Ignore navigation property
+            .ForMember(dest => dest.AppUser, opt => opt.Ignore()) // Ignore navigation property
+            .ForMember(dest => dest.Quiz, opt => opt.Ignore()); // Ignore navigation property
+
+            CreateMap<Result, GetResultDto>();
+            CreateMap<Answer, GetAnswerDto>();
         }
     }
 

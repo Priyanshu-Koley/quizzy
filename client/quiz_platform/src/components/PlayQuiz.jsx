@@ -1,13 +1,13 @@
 import '../styles/PlayQuiz.css';
 import { Button, Modal } from '@mui/joy';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import good from '../images/quiz_finish.gif';
 import bad from '../images/quiz_finish_sad.gif';
 import { toast } from 'react-toastify';
 import { LinearProgress } from '@mui/joy';
-import { Checkbox, FormControlLabel } from '@mui/material';
 import { AccessTime, ArrowBackIosNewOutlined, ArrowForwardIosOutlined, CheckCircleOutlineOutlined, Close } from '@mui/icons-material';
+import { jwtDecode } from 'jwt-decode';
 
 
 const PlayQuiz = (props) => {
@@ -23,8 +23,16 @@ const PlayQuiz = (props) => {
     const [quizFinished, setQuizFinished] = useState(false);
     // store question number
     const [queNo, setQueNo] = useState(0);
+    // store the quiz starting time
+    const [startTime, setStartTime] = useState(new Date());
+    // store the quiz ending time
+    const [endTime, setEndTime] = useState(new Date());
     // store the user's answers
     const [userAnswers, setUserAnswers] = useState({});
+    // store the user's attempted questions
+    const [attemptedQuestions, setAttemptedQuestions] = useState([]);
+    // store the user's no of correct answers
+    const [correctAnswers, setCorrectAnswers] = useState(0);
     // store the user's marks obtained
     const [marks, setMarks] = useState(0);
     // store loading state
@@ -35,10 +43,12 @@ const PlayQuiz = (props) => {
     const [totalMarks, setTotalMarks] = useState(0);
     // store total no. of questions
     const [noOfQuestions, setNoOfQuestions] = useState(0);
-    // store user's acceped state of terms
+    // store user's accepted state of terms
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     // quiz timer
     const [timer, setTimer] = useState(0);
+    // quiz interval
+    const [currentInterval, setCurrentInterval] = useState(null);
 
     // flag to open/close submit confirmation modal
     const [openSubmit, setOpenSubmit] = useState(false);
@@ -46,6 +56,123 @@ const PlayQuiz = (props) => {
     // function to handle open/close of delete confirmation modal
     const handleOpenSubmit = () => setOpenSubmit(true);
     const handleCloseSubmit = () => setOpenSubmit(false);
+
+    const startTimeRef = useRef(startTime);
+    const endTimeRef = useRef(endTime);
+    const userAnswersRef = useRef(userAnswers);
+    const correctAnswersRef = useRef(correctAnswers);
+    const marksRef = useRef(marks);
+    const queNoRef = useRef(queNo);
+    const currentIntervalRef = useRef(currentInterval);
+
+    // Update refs whenever state changes
+    useEffect(() => {
+        startTimeRef.current = startTime;
+    }, [startTime]);
+
+    useEffect(() => {
+        endTimeRef.current = endTime;
+    }, [endTime]);
+
+    useEffect(() => {
+        userAnswersRef.current = userAnswers;
+    }, [userAnswers]);
+
+    useEffect(() => {
+        correctAnswersRef.current = correctAnswers;
+    }, [correctAnswers]);
+
+    useEffect(() => {
+        marksRef.current = marks;
+    }, [marks]);
+
+    useEffect(() => {
+        queNoRef.current = queNo;
+    }, [queNo]);
+    
+    useEffect(() => {
+        currentIntervalRef.current = currentInterval;
+    }, [currentInterval]);
+
+    const submitQuiz = useCallback(() => {
+        if (currentIntervalRef.current !== null) {
+            clearInterval(currentIntervalRef.current);
+            setCurrentInterval(null);
+        }
+
+        const endTime = new Date().toISOString();
+        setEndTime(endTime);
+        const attemptedQuestions = Object.keys(userAnswersRef.current);
+        const noOfAttemptedQuestions = attemptedQuestions.length;
+        const resultId = jwtDecode(localStorage.getItem('token')).ResultId;
+        setAttemptedQuestions(attemptedQuestions);
+
+        const answersArray = attemptedQuestions.map(questionId => ({
+            questionId: questionId,
+            optionId: userAnswersRef.current[questionId].optionId,
+            isCorrect: userAnswersRef.current[questionId].isCorrect,
+            resultId: resultId,
+            userId: props.user.userId,
+            quizId: quiz.quizId
+        }));
+
+        const result = {
+            userId: props.user.userId,
+            quizId: quiz.quizId,
+            answers: answersArray,
+            noOfAttemptedQuestions: noOfAttemptedQuestions,
+            noOfCorrectAnswers: correctAnswersRef.current,
+            noOfWrongAnswers: noOfAttemptedQuestions - correctAnswersRef.current,
+            obtainedMarks: marksRef.current,
+            startTime: startTimeRef.current,
+            endTime: endTime,
+            timeTakenInSecs: (Date.parse(endTime) - Date.parse(startTimeRef.current)) / 1000,
+        };
+
+
+        if (props.user.role === 'Admin' || props.user.role === 'Teacher') {
+            toast("Quiz Submitted");
+            setQuizStarted(false);
+            setQuizFinished(true);
+            setQueNo(queNoRef.current + 1);
+        }
+        else {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+
+            const raw = JSON.stringify(result);
+
+            const requestOptions = {
+                method: "PUT",
+                headers: myHeaders,
+                body: raw,
+                redirect: "follow"
+            };
+
+            fetch(`https://localhost:7085/api/PlayQuiz/submitQuiz/${resultId}`, requestOptions)
+                .then(async (response) => {
+                    const result = await response.json();
+                    if (response.status === 400) {
+                        toast.error(result.message);
+                    } else if (response.status === 401) {
+                        toast.error("Unauthorized");
+                    } else if (response.status === 200) {
+                        toast("Quiz Submitted");
+                        setQuizStarted(false);
+                        setQuizFinished(true);
+                        setQueNo(queNoRef.current + 1);
+                    } else {
+                        toast.error(result.message);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    toast.error(error);
+                });
+        }
+    }, [props.user.userId, quiz.quizId]);
+
 
     // Redirect to home page if no quiz id is passed
     // Else call getQuiz func
@@ -107,32 +234,97 @@ const PlayQuiz = (props) => {
     }
 
     // function to start the quiz
-    const startQuiz = () => {
-        setQuizStarted(true);
-        setTimer(quiz.totalTimeInSeconds);
-        const interval = setInterval(() => {
-            setTimer(prevTimer => {
-                if (prevTimer > 0) {
-                    return prevTimer - 1;
-                } else {
-                    clearInterval(interval);
-                    submitQuiz();
-                }
-            });
-        }, 1000);
+    const startQuiz = async () => {
+        if (props.user.role === 'Admin' || props.user.role === 'Teacher') {
+            toast("Quiz Started");
+            setQuizStarted(true);
+            setTimer(quiz.totalTimeInSeconds);
+            setStartTime(new Date().toISOString());
+            const interval = setInterval(() => {
+                setTimer(prevTimer => {
+                    if (prevTimer > 1) {
+                        return prevTimer - 1;
+                    }
+                    else if (prevTimer === 1) {
+                        setCurrentInterval(null);
+                        submitQuiz();
+                        return prevTimer - 1;
+                    }
+                    else {
+                        clearInterval(interval);
+                        return 0;
+                    }
+                });
+            }, 1000);
+            setCurrentInterval(interval);
+        }
+        else {
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+
+            const quizStarter = {
+                "userId": props.user.userId,
+                "quizId": quiz.quizId,
+                "totalMarks": totalMarks
+            }
+            const raw = JSON.stringify(quizStarter);
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+                redirect: "follow"
+            };
+
+            fetch("https://localhost:7085/api/PlayQuiz/startQuiz", requestOptions)
+                .then(async (response) => {
+                    const result = await response.json();
+                    if (response.status === 400) {
+                        toast.error("Bad request");
+                    }
+                    else if (response.status === 401) {
+                        toast.error("Unauthorized");
+                    }
+                    else if (response.status === 409) {
+                        toast.error(result.message);
+                    }
+                    else if (response.status === 200) {
+                        toast("Quiz Started");
+                        localStorage.removeItem('token');
+                        localStorage.setItem('token', result.token)
+
+                        setQuizStarted(true);
+                        setTimer(quiz.totalTimeInSeconds);
+                        setStartTime(new Date().toISOString());
+                        const interval = setInterval(() => {
+                            setTimer(prevTimer => {
+                                if (prevTimer > 1) {
+                                    return prevTimer - 1;
+                                }
+                                else if (prevTimer === 1) {
+                                    submitQuiz();
+                                    return prevTimer - 1;
+                                }
+                                else {
+                                    clearInterval(interval);
+                                    return 0;
+                                }
+                            });
+                        }, 1000);
+                    }
+                    else
+                        toast.error(result.message);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    toast.error(error);
+                });
+        }
     }
 
     // function to navigate to previous question
-    const prev = (indexQue) => {
-        // const query = `option${indexQue}`;
-        // let val;
-        // const chosenOption = document.querySelector(`input[name=${query}]:checked`);
-        // if (chosenOption) {
-        //     val = Number(chosenOption.value);
-        //     let ans = answers;
-        //     ans[indexQue] = val;
-        //     setAnswers(ans);
-        // }
+    const prev = () => {
         setQueNo(queNo - 1);
     }
 
@@ -141,13 +333,7 @@ const PlayQuiz = (props) => {
         const query = `option__${questionId}`;
         const chosenOption = document.querySelector(`input[name=${query}]:checked`);
         if (chosenOption) {
-            // let val, ansTemp;
-            // val = Number(chosenOption.value);
-            // ansTemp = answers;
-            // ansTemp[indexQue] = val;
-            // setAnswers(ansTemp);
-            // Submit quiz
-            // if it was the last question then finish the quiz & calculate the score
+            // if it was the last question then open modal to submit quiz
             if (queNo === quiz.questions.length - 1) {
                 handleOpenSubmit();
             }
@@ -155,12 +341,9 @@ const PlayQuiz = (props) => {
                 setQueNo(queNo + 1);
         }
         else {
-            // participant need to select an answer before proceeding else error will be shown
-            const helper = document.getElementById("helper-ans-" + questionId);
-            helper.style.display = "block";
-            setTimeout(() => {
-                helper.style.display = "none";
-            }, 3000);
+            toast.warn("Answer this question to proceed", {
+                autoClose: 2000
+            });
         }
     }
 
@@ -170,6 +353,7 @@ const PlayQuiz = (props) => {
         if (userAnswers[questionId]) {
             if (userAnswers[questionId].isCorrect === true) {
                 setMarks(prev => prev - quiz.questions.find(q => q.questionId === questionId).marks);
+                setCorrectAnswers(prev => prev - 1);
                 // temp_marks -= quiz.questions.find(q => q.questionId === questionId).marks;
             }
         }
@@ -177,43 +361,80 @@ const PlayQuiz = (props) => {
         // temp_userAnswers = { ...temp_userAnswers, [questionId]: { optionId: optionId, isCorrect: isCorrect } };
         if (isCorrect) {
             setMarks(prev => prev + quiz.questions.find(q => q.questionId === questionId).marks);
+            setCorrectAnswers(prev => prev + 1);
             // temp_marks += quiz.questions.find(q => q.questionId === questionId).marks;
         }
         // console.log(temp_userAnswers);
         // console.log(temp_marks);
     };
 
-    const submitQuiz = () => {
-        // console.log(answer);
-        // let score = [];
-        // for (let i = 0; i < correctAnswers.length; i++) {
-        //     if (answer[i] === correctAnswers[i]) {
-        //         score.push(1);
-        //     }
-        //     else {
-        //         score.push(0);
+    // const submitQuiz = () => {
+    //     const endTime = new Date().toISOString();
+    //     console.log(userAnswers);
+    //     const attemptedQuestions = Object.keys(userAnswers);
+    //     const noOfAttemptedQuestions = attemptedQuestions.length;
+    //     const resultId = jwtDecode(localStorage.getItem('token')).ResultId;
+    //     setAttemptedQuestions(attemptedQuestions);
 
-        //     }
-        // }
-        // setScore(score);
-        // let total = score.reduce(function (x, y) {
-        //     return x + y;
-        // }, 0);
-        // setTotal(total);
+    //     const answersArray = attemptedQuestions.map(questionId => ({
+    //         questionId: questionId,
+    //         optionId: userAnswers[questionId].optionId,
+    //         isCorrect: userAnswers[questionId].isCorrect,
+    //         resultId: resultId,
+    //         userId: props.user.userId,
+    //         quizId: quiz.quizId
+    //     }));
 
-        const result = {
-            userId: props.user.userId,
-            quizId: quiz.quizId,
-            answers: userAnswers,
-            marks: marks,
-            // timeTaken: (endTime - startTime) / 1000,
-        };
-        console.log(result);
-        toast("Quiz Submitted")
-        setQuizStarted(false);
-        setQuizFinished(true);
-        setQueNo(queNo + 1);
-    }
+    //     const result = {
+    //         userId: props.user.userId,
+    //         quizId: quiz.quizId,
+    //         answers: answersArray,
+    //         noOfAttemptedQuestions: noOfAttemptedQuestions,
+    //         noOfCorrectAnswers: correctAnswers,
+    //         noOfWrongAnswers: noOfAttemptedQuestions - correctAnswers,
+    //         obtainedMarks: marks,
+    //         endTime: endTime,
+    //         timeTakenInSecs: (Date.parse(endTime) - Date.parse(startTime)) / 1000,
+    //     };
+    //     console.log(result);
+
+    //     const myHeaders = new Headers();
+    //     myHeaders.append("Content-Type", "application/json");
+    //     myHeaders.append("Authorization", `Bearer ${localStorage.getItem("token")}`);
+
+    //     const raw = JSON.stringify(result);
+
+    //     const requestOptions = {
+    //         method: "PUT",
+    //         headers: myHeaders,
+    //         body: raw,
+    //         redirect: "follow"
+    //     };
+
+    //     fetch(`https://localhost:7085/api/PlayQuiz/submitQuiz?resultId=${resultId}`, requestOptions)
+    //         .then(async (response) => {
+    //             const result = await response.json();
+    //             if (response.status === 400) {
+    //                 toast.error(result.message);
+    //             }
+    //             else if (response.status === 401) {
+    //                 toast.error("Unauthorized");
+    //             }
+    //             else if (response.status === 200) {                   
+    //                 console.log(result);
+    //                 toast("Quiz Submitted")
+    //                 setQuizStarted(false);
+    //                 setQuizFinished(true);
+    //                 setQueNo(queNo + 1);
+    //             }
+    //             else
+    //                 toast.error(result.message);
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //             toast.error(error);
+    //         });
+    // }
 
     // function to generate different finish message for different performance
     const finishMessage = () => {
@@ -254,16 +475,13 @@ const PlayQuiz = (props) => {
     // }
 
     // back to home
-
     const goToHome = () => {
         navigate("/");
     }
 
-    const roundToTwoDecimalsPlaces = (num) => {
-        return Math.round((num + Number.EPSILON) * 100) / 100
-    }
-
     function secondsToHms(d) {
+        if (d === 0)
+            return 0;
         d = Number(d);
         var h = Math.floor(d / 3600);
         var m = Math.floor(d % 3600 / 60);
@@ -352,10 +570,6 @@ const PlayQuiz = (props) => {
                                         </Button>
                                     </div>
                                 }
-                                {/*helper text for answering the current question before proceeding*/}
-                                <div className='helper-ans helper' id={"helper-ans-" + question.questionId}>
-                                    Answer this question to proceed
-                                </div>
                                 {/*Next button*/}
                                 <div>
                                     <Button
@@ -397,13 +611,13 @@ const PlayQuiz = (props) => {
                         Total number of Questions: {quiz.questions.length}
                     </div>
                     <div className='score'>
-                        Marks: {marks} out of {totalMarks}
+                        Number of attempted questions: {attemptedQuestions.length}
                     </div>
                     <div className='score'>
-                        Marks: {marks} out of {totalMarks}
+                        Number of correct answers: {correctAnswers}
                     </div>
                     <div className='score'>
-                        Marks: {marks} out of {totalMarks}
+                        Number of wrong answers: {attemptedQuestions.length - correctAnswers}
                     </div>
 
                     <div className='play_nav_btns'>
@@ -481,7 +695,7 @@ const PlayQuiz = (props) => {
 
                             <div className='play-quiz-info'>
                                 <span>
-                                    Total time: {(quiz.totalTimeInSeconds / 60) > 60 ? secondsToHms(quiz.totalTimeInSeconds) + " Hours" : (quiz.totalTimeInSeconds > 60 ? secondsToHms(quiz.totalTimeInSeconds) + " Mins" : quiz.totalTimeInSeconds + " Secs")}
+                                    Total time: {(quiz.totalTimeInSeconds / 60) >= 60 ? secondsToHms(quiz.totalTimeInSeconds) + " Hours" : (quiz.totalTimeInSeconds >= 60 ? secondsToHms(quiz.totalTimeInSeconds) + " Mins" : quiz.totalTimeInSeconds + " Secs")}
                                 </span>
                                 <span>
                                     Full marks: {totalMarks}
@@ -507,7 +721,7 @@ const PlayQuiz = (props) => {
                             </div>
 
                             <div className='terms'>
-                                <input type="checkbox" name="terms" id="terms" onChange={() => setAcceptedTerms(!acceptedTerms)}/>
+                                <input type="checkbox" name="terms" id="terms" onChange={() => setAcceptedTerms(!acceptedTerms)} />
                                 <label htmlFor="terms">
                                     I agree to the above mentioned points. My attempt will not be considered if I got involved in any malpractices*
                                 </label>

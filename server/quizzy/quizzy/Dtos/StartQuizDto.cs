@@ -1,11 +1,14 @@
-﻿namespace quizzy.Dtos
+﻿using quizzy.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace quizzy.Dtos
 {
     public class StartQuizDto
     {
-        public Guid UserId { get; set; }
-        public Guid QuizId { get; set; }
-        public DateTime StartTime { get; set; } = DateTime.UtcNow;
-        public string UserIpAddress { get; set; }
-
+        public required Guid UserId { get; set; }
+        public required Guid QuizId { get; set; }
+        public Guid ResultId { get; set; }
+        public required int TotalMarks { get; set; }
     }
 }

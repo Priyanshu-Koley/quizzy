@@ -28,7 +28,7 @@ namespace quizzy.Controllers
             try
             {
                 var users = await _context.Users
-                                            .Select(u => new { u.Id, u.Name, u.Email, u.RoleID })
+                                            .Select(u => new { u.UserId, u.Name, u.Email, u.RoleID })
                                             .ToListAsync();
 
                 return Ok(users);
@@ -54,7 +54,7 @@ namespace quizzy.Controllers
             }
             var response = new GetUserDto
             {
-                Id = user.Id,
+                Id = user.UserId,
                 Name = user.Name,
                 Email = user.Email
             };
